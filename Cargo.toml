@@ -6,6 +6,8 @@ publish = false
 
 [dependencies]
 anyhow = "1.0.80"
+aws-config = "1.1.5"
+aws-sdk-s3 = "1.15.0"
 derive_more = "0.99.17"
 indexmap = { version = "2.2.3", features = ["serde"] }
 serde = { version = "1.0.197", features = ["derive"] }
