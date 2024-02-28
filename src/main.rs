@@ -253,7 +253,16 @@ async fn read_toml_file<T: DeserializeOwned>(path: impl AsRef<Path>) -> Result<T
 }
 
 fn validate_theme(theme: &serde_json::Value) -> Result<()> {
-    // TODO: Validate theme.
+    let json_schema: serde_json::Value =
+        serde_json::from_str(include_str!("../schemas/theme-family.json"))?;
+
+    let mut scope = valico::json_schema::Scope::new();
+    let schema = scope.compile_and_return(json_schema, false)?;
+
+    let validation = schema.validate(&theme);
+    if !validation.errors.is_empty() {
+        bail!("Theme validation failed: {:?}", validation.errors);
+    }
 
     Ok(())
 }
