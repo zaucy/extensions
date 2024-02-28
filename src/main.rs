@@ -146,6 +146,24 @@ async fn package_extension(
         }
     }
 
+    if is_directory(&languages_src_dir).await {
+        fs::create_dir(&languages_pkg_dir).await?;
+
+        let mut read_dir = fs::read_dir(languages_src_dir).await?;
+        while let Some(language_entry) = read_dir.next_entry().await? {
+            if !is_directory(language_entry.path()).await {
+                continue;
+            }
+
+            let config: serde_json::Value =
+                read_toml_file(language_entry.path().join("config.toml")).await?;
+
+            validate_language_config(&config)?;
+
+            dbg!(&config);
+        }
+    }
+
     Ok(())
 }
 
@@ -250,6 +268,21 @@ async fn read_toml_file<T: DeserializeOwned>(path: impl AsRef<Path>) -> Result<T
     toml_file.read_to_string(&mut buffer).await?;
 
     Ok(toml::from_str(&buffer)?)
+}
+
+fn validate_language_config(config: &serde_json::Value) -> Result<()> {
+    let json_schema: serde_json::Value =
+        serde_json::from_str(include_str!("../schemas/language-config.json"))?;
+
+    let mut scope = valico::json_schema::Scope::new();
+    let schema = scope.compile_and_return(json_schema, false)?;
+
+    let validation = schema.validate(&config);
+    if !validation.errors.is_empty() {
+        bail!("Language config validation failed: {:?}", validation.errors);
+    }
+
+    Ok(())
 }
 
 fn validate_theme(theme: &serde_json::Value) -> Result<()> {
