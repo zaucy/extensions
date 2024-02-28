@@ -1,0 +1,16 @@
+[package]
+name = "zed-extensions"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow = "1.0.80"
+derive_more = "0.99.17"
+indexmap = { version = "2.2.3", features = ["serde"] }
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.114"
+serde_json_lenient = "0.1.8"
+tempfile = "3.10.1"
+tokio = { version = "1.36.0", features = ["full"] }
+toml = "0.8.10"

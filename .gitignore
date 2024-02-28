@@ -2,3 +2,8 @@
 .env
 build
 node_modules
+
+
+# Added by cargo
+
+/target
